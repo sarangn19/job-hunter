@@ -1,0 +1,24 @@
+{
+  "name": "job-hunter",
+  "version": "1.0.0",
+  "description": "Automated UI/UX & Product Designer job aggregator across 18+ job boards, reporting new openings every hour.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node --experimental-sqlite src/index.js",
+    "dev": "node --watch --experimental-sqlite src/index.js",
+    "scan": "node --experimental-sqlite src/scan-once.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.13",
+    "rss-parser": "^3.13.0",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

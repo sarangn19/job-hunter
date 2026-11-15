@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Hunter — UI/UX & Product Designer Openings</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>🎯 Job Hunter</h1>
+    <p class="sub">Auto-scans 18 job boards every hour for UI/UX & Product Designer roles.</p>
+    <div class="actions">
+      <button id="scanBtn">Scan Now</button>
+      <button id="markReadBtn">Mark All Read</button>
+      <span id="status"></span>
+    </div>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="filters">
+    <select id="sourceFilter"><option value="">All sources</option></select>
+    <label><input type="checkbox" id="newOnly" /> New only</label>
+    <input type="text" id="searchBox" placeholder="Search title/company..." />
+  </section>
+
+  <main id="jobs"></main>
+
+  <section class="settings">
+    <h2>Settings / Reporting</h2>
+    <form id="settingsForm">
+      <div class="grid">
+        <label>SMTP Host <input name="smtp_host" /></label>
+        <label>SMTP Port <input name="smtp_port" value="587" /></label>
+        <label>SMTP Secure <input name="smtp_secure" placeholder="true/false" /></label>
+        <label>SMTP User <input name="smtp_user" /></label>
+        <label>SMTP Pass <input name="smtp_pass" type="password" /></label>
+        <label>From <input name="smtp_from" /></label>
+        <label>Email To <input name="email_to" /></label>
+        <label>Webhook URL <input name="webhook_url" /></label>
+        <label>Cron <input name="cron" value="0 * * * *" /></label>
+      </div>
+      <button type="submit">Save Settings</button>
+    </form>
+  </section>
+
+  <section class="scans">
+    <h2>Recent Scans</h2>
+    <div id="scans"></div>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
