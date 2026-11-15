@@ -2,13 +2,14 @@
 const path = require('path');
 const fs = require('fs');
 
-const USE_PG = !!process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL;
+const USE_PG = !!DATABASE_URL;
 
 let backend;
 
 if (USE_PG) {
   const { Pool } = require('pg');
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.PGSSL === 'disable' ? false : { rejectUnauthorized: false } });
+  const pool = new Pool({ connectionString: DATABASE_URL, ssl: process.env.PGSSL === 'disable' ? false : { rejectUnauthorized: false } });
 
   async function init() {
     await pool.query(`
