@@ -71,6 +71,8 @@ async function loadSettings() {
   }
 }
 
+$('#exportPdfBtn').addEventListener('click', exportPdf);
+
 $('#scanBtn').addEventListener('click', async () => {
   $('#status').textContent = 'Scan started...';
   await fetch('/api/scan', { method: 'POST' });
@@ -92,6 +94,50 @@ $('#settingsForm').addEventListener('submit', async (e) => {
   await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
   alert('Settings saved');
 });
+
+function exportPdf() {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { alert('PDF library not loaded. Check your connection.'); return; }
+  const q = $('#searchBox').value.toLowerCase();
+  const src = $('#sourceFilter').value;
+  const filtered = allJobs.filter(j => (!src || j.source === src) && (!q || (j.title + ' ' + (j.company||'')).toLowerCase().includes(q)));
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const margin = 40;
+  let y = margin;
+  doc.setFontSize(16);
+  doc.text('Job Hunter — UI/UX & Product Designer Openings', margin, y);
+  y += 22;
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text(`Generated: ${new Date().toLocaleString()}  |  Total: ${filtered.length} jobs`, margin, y);
+  y += 18;
+  doc.setDrawColor(200);
+  doc.line(margin, y, pageW - margin, y);
+  y += 14;
+  doc.setTextColor(0);
+  for (const j of filtered) {
+    if (y > doc.internal.pageSize.getHeight() - 80) { doc.addPage(); y = margin; }
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'bold');
+    doc.text(j.title || '', margin, y, { maxWidth: pageW - 2*margin });
+    y += 13;
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    const meta = [j.source, j.company, j.location].filter(Boolean).join('  •  ');
+    doc.text(meta, margin, y, { maxWidth: pageW - 2*margin });
+    y += 11;
+    if (j.url) {
+      doc.setTextColor(30, 80, 180);
+      doc.text(j.url, margin, y, { maxWidth: pageW - 2*margin });
+      y += 11;
+    }
+    doc.setTextColor(0);
+    y += 6;
+  }
+  doc.save(`job-hunter-${new Date().toISOString().slice(0,10)}.pdf`);
+}
 
 async function refresh() {
   await Promise.all([loadStats(), loadJobs(), loadScans()]);
