@@ -11,36 +11,35 @@ router.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().to
 
 router.get('/api/sources', (req, res) => res.json({ sources: SOURCES }));
 
-router.get('/api/jobs', (req, res) => {
+router.get('/api/jobs', async (req, res) => {
   const { source, newOnly, limit, since } = req.query;
-  const jobs = db.listJobs({ source: source || undefined, isNew: newOnly === '1' ? true : (newOnly === '0' ? false : undefined), limit: Number(limit) || 500, since });
+  const jobs = await db.listJobs({ source: source || undefined, isNew: newOnly === '1' ? true : (newOnly === '0' ? false : undefined), limit: Number(limit) || 500, since });
   res.json({ count: jobs.length, jobs });
 });
 
-router.get('/api/stats', (req, res) => res.json(db.stats()));
+router.get('/api/stats', async (req, res) => res.json(await db.stats()));
 
-router.get('/api/scans', (req, res) => res.json({ scans: db.recentScans(Number(req.query.limit) || 50) }));
+router.get('/api/scans', async (req, res) => res.json({ scans: await db.recentScans(Number(req.query.limit) || 50) }));
 
 router.post('/api/scan', async (req, res) => {
-  // run in background
   runScan().catch(e => console.error(e));
   res.json({ started: true });
 });
 
-router.post('/api/jobs/read', (req, res) => {
-  db.markAllRead();
+router.post('/api/jobs/read', async (req, res) => {
+  await db.markAllRead();
   res.json({ ok: true });
 });
 
-router.get('/api/settings', (req, res) => {
+router.get('/api/settings', async (req, res) => {
   const keys = ['smtp_host','smtp_port','smtp_secure','smtp_user','smtp_from','email_to','webhook_url','cron'];
   const out = {};
-  for (const k of keys) out[k] = db.getSetting(k);
+  for (const k of keys) out[k] = await db.getSetting(k);
   res.json(out);
 });
 
-router.post('/api/settings', (req, res) => {
-  for (const [k, v] of Object.entries(req.body || {})) db.setSetting(k, v);
+router.post('/api/settings', async (req, res) => {
+  for (const [k, v] of Object.entries(req.body || {})) await db.setSetting(k, v);
   res.json({ ok: true });
 });
 

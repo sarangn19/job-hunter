@@ -11,9 +11,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', routes);
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Job Hunter running at http://localhost:${PORT}`);
-  const cronExpr = db.getSetting('cron') || '0 * * * *';
-  startScheduler(cronExpr);
-});
+async function boot() {
+  await db.init();
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, async () => {
+    console.log(`Job Hunter running at http://localhost:${PORT}`);
+    const cronExpr = (await db.getSetting('cron')) || '0 * * * *';
+    startScheduler(cronExpr);
+  });
+}
+boot().catch(e => { console.error(e); process.exit(1); });

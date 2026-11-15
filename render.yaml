@@ -2,17 +2,11 @@ services:
   - type: web
     name: job-hunter
     env: node
-    plan: starter
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 22
-      - key: DATA_DIR
-        value: /var/data
-      - key: PORT
-        value: 10000
-    disk:
-      name: job-hunter-data
-      mountPath: /var/data
-      sizeGB: 1
+      - key: DATABASE_URL
+        sync: false

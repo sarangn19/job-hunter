@@ -43,7 +43,22 @@ npm run scan
 
 Node.js 18+, Express, node-cron, cheerio, rss-parser, node:sqlite, nodemailer.
 
+## Free deployment (recommended, no cost)
+
+The most reliable free setup uses **GitHub Actions** for the hourly scan and an optional **Render free** web service for the dashboard, sharing state in a free **Neon** Postgres database.
+
+1. Create a free database at https://neon.tech (or Supabase). Copy its connection string.
+2. In your GitHub repo: Settings → Secrets and variables → Actions → add:
+   - `DATABASE_URL` (the Neon connection string)
+   - Reporting secrets: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `EMAIL_TO`, and/or `WEBHOOK_URL`
+   - Optional: `JOB_KEYWORDS`
+3. The included workflow `.github/workflows/hourly-scan.yml` runs `npm run scan` every hour, persists dedup state to `data/jobs.db` in the repo, and reports new openings. Enable it under the repo's Actions tab.
+4. (Optional dashboard) Deploy to Render free using the Blueprint; set `DATABASE_URL` in Render env vars. The dashboard reads from the same Neon DB.
+
+> Render's free web services sleep when idle; that's fine because scanning is done by GitHub Actions, not the web service. The dashboard simply wakes on visit.
+
 ## Notes
 
 - LinkedIn/remote boards may rate-limit; increase intervals if needed.
 - FlexJobs/Wellfound require accounts for full listings — paste session cookies or API keys via settings if you extend the adapters.
+- The provided `DATABASE_URL` env in some environments may be invalid; create your own free Neon/Supabase database.
